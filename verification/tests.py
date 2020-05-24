@@ -7,8 +7,68 @@ Each test is dict with
     "explanation" -- not necessary key, it's using for additional info in animation.
 """
 
+from random import choice, shuffle
+from my_solution import paper_dice
+
+BASE = (5, 5)
+DIF = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+
+def get_adj_cells(cells):
+    adj_cells = set()
+    for y, x in cells:
+        adj_cells |= {(y + dy, x + dx) for dy, dx in DIF}
+    return list(adj_cells - cells)
+
+
+def check_square(faces):
+    for y, x in faces:
+        if {(y, x), (y, x + 1), (y + 1, x), (y + 1, x + 1)} <= faces:
+            return False
+    return True
+
+
+def make_random_paper_dice():
+    while True:
+        faces = {BASE}
+        for _ in range(5):
+            faces.add(choice(get_adj_cells(faces)))
+        if check_square(faces):
+            break
+
+    all_x = [x for _, x in faces]
+    all_y = [y for y, _ in faces]
+    min_y = min(all_y)
+    min_x = min(all_x)
+    height = max(all_y) - min_y + 1
+    width = max(all_x) - min_x + 1
+
+    paper = []
+    shuffle(nums := list('123456'))
+    for y in range(height):
+        row = ''.join(' ' if (y + min_y, x + min_x) not in faces else nums.pop() for x in range(width))
+        paper.append(' ' + row + ' ')
+
+    empty_row = ' ' * (width + 2)
+    return [empty_row] + paper + [empty_row]
+
+
+def make_random_tests(num):
+    random_tests = []
+    right = False
+    while True:
+        if right and len(random_tests) == num:
+            break
+        paper = make_random_paper_dice()
+        if answer := paper_dice(paper):
+            right = True
+        random_tests = random_tests[:num - 1] + [{'input': paper,
+                                                  'answer': answer}]
+    return random_tests
+
+
 TESTS = {
-    "Basics": [
+    "1. Basics": [
         {
             "input": [
                 '      ',
@@ -16,7 +76,7 @@ TESTS = {
                 ' 2354 ',
                 ' 6    ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -26,7 +86,7 @@ TESTS = {
                 '2354',
                 ' 6  ',
                 '    ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -36,7 +96,7 @@ TESTS = {
                 '2354',
                 '  6 ',
                 '    ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -46,7 +106,7 @@ TESTS = {
                 '2354',
                 '   6',
                 '    ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -56,7 +116,7 @@ TESTS = {
                 '2354',
                 ' 6  ',
                 '    ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -66,7 +126,7 @@ TESTS = {
                 '2354',
                 '  6 ',
                 '    ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -76,9 +136,9 @@ TESTS = {
                 '235 ',
                 '  64',
                 '    ',
-                ],
+            ],
             "answer": True,
-        }, 
+        },
         {
             "input": [
                 '    ',
@@ -86,9 +146,9 @@ TESTS = {
                 '235 ',
                 '  64',
                 '    ',
-                ],
+            ],
             "answer": True,
-        }, 
+        },
         {
             "input": [
                 '      ',
@@ -96,18 +156,18 @@ TESTS = {
                 ' 235  ',
                 '   64 ',
                 '      ',
-                ],
+            ],
             "answer": True,
-        }, 
+        },
         {
             "input": [
                 '       ',
                 ' 126   ',
                 '   354 ',
                 '       ',
-                ],
+            ],
             "answer": True,
-        }, 
+        },
         {
             "input": [
                 '      ',
@@ -115,11 +175,11 @@ TESTS = {
                 '  36  ',
                 '   54 ',
                 '      ',
-                ],
+            ],
             "answer": True,
-        }, 
+        },
     ],
-    "Rotate": [
+    "2. Rotate": [
         {
             "input": [
                 '     ',
@@ -128,7 +188,7 @@ TESTS = {
                 '  5  ',
                 '  4  ',
                 '     ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -138,7 +198,7 @@ TESTS = {
                 ' 4532 ',
                 '    6 ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -149,7 +209,7 @@ TESTS = {
                 '  3  ',
                 ' 621 ',
                 '     ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -160,7 +220,7 @@ TESTS = {
                 '  5  ',
                 ' 64  ',
                 '     ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -171,11 +231,11 @@ TESTS = {
                 ' 56  ',
                 ' 4   ',
                 '     ',
-                ],
+            ],
             "answer": True,
         },
     ],
-    "Reverse": [
+    "3. Reverse": [
         {
             "input": [
                 '      ',
@@ -183,7 +243,7 @@ TESTS = {
                 ' 4532 ',
                 '   6  ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -193,7 +253,7 @@ TESTS = {
                 ' 4532 ',
                 '  6   ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -203,7 +263,7 @@ TESTS = {
                 ' 4532 ',
                 ' 6    ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -213,7 +273,7 @@ TESTS = {
                 ' 4532 ',
                 '  6   ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -223,7 +283,7 @@ TESTS = {
                 '  532 ',
                 ' 46   ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -233,7 +293,7 @@ TESTS = {
                 '  532 ',
                 ' 46   ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -243,7 +303,7 @@ TESTS = {
                 '  532 ',
                 ' 46   ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -252,7 +312,7 @@ TESTS = {
                 '   621 ',
                 ' 453   ',
                 '       ',
-                ],
+            ],
             "answer": True,
         },
         {
@@ -262,11 +322,11 @@ TESTS = {
                 '  63  ',
                 ' 45   ',
                 '      ',
-                ],
+            ],
             "answer": True,
         },
     ],
-    "Wrong": [
+    "4. Wrong": [
         {
             "input": [
                 '     ',
@@ -275,7 +335,7 @@ TESTS = {
                 '  4  ',
                 '  56 ',
                 '     ',
-                ],
+            ],
             "answer": False,
         },
         {
@@ -285,7 +345,7 @@ TESTS = {
                 '  34  ',
                 '   56 ',
                 '      ',
-                ],
+            ],
             "answer": False,
         },
         {
@@ -294,7 +354,7 @@ TESTS = {
                 ' 1  6 ',
                 ' 2354 ',
                 '      ',
-                ],
+            ],
             "answer": False,
         },
         {
@@ -304,7 +364,7 @@ TESTS = {
                 ' 2    ',
                 ' 6354 ',
                 '      ',
-                ],
+            ],
             "answer": False,
         },
         {
@@ -315,8 +375,9 @@ TESTS = {
                 '   5 ',
                 '   4 ',
                 '     ',
-                ],
+            ],
             "answer": False,
         },
     ],
+    "5. Randoms": make_random_tests(20),
 }
