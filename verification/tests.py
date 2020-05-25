@@ -378,6 +378,15 @@ TESTS = {
             ],
             "answer": False,
         },
+        {
+            "input": [
+                ' 12',
+                ' 3 ',
+                ' 65',
+                ' 4 ',
+            ],
+            "answer": False,
+        },
     ],
     "5. Randoms": make_random_tests(20),
 }
